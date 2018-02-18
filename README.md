@@ -10,4 +10,4 @@
 
 Подробное техническое задание находится здесь
 
-* [ТЗ](http://www.dropwizard.io/1.0.2/docs/) - Подробное ТЗ
+* [ТЗ](https://github.com/realTrueProger/routesManager/blob/master/TechMission.docx) - Подробное ТЗ

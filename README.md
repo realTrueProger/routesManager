@@ -10,4 +10,4 @@
 
 Подробное техническое задание находится здесь
 
-* [ТЗ](https://github.com/realTrueProger/routesManager/blob/master/TechMission.docx) - Подробное ТЗ
+* [ТЗ](https://github.com/realTrueProger/routesManager/blob/master/TechMission.pdf) - Подробное ТЗ

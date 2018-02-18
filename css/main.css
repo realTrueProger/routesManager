@@ -1,0 +1,29 @@
+@import "normalize.css";
+
+html, body {
+    width: 100%;
+}
+
+.container {
+    width: 60%;
+    margin: 0 auto;
+    margin-top: 10px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    border: 1px solid black;
+    margin: 2px;
+}
+
+.delete {
+    background-image: url("../img/cansel.png");
+    border-radius: 10px;
+    background-size: cover;
+    width: 20px;
+    height: 20px;
+}

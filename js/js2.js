@@ -32,9 +32,22 @@ ymaps.ready(() => {
 
         renderMap(routesArray, geoCollection) {
             geoCollection.removeAll();
-            for (let i = 0; i < routesArray.length; i++) {
-                let placeMark = new ymaps.Placemark(routesArray[i].coords, {
-                    balloonContent: routesArray[i].value
+            // for (let i = 0; i < routesArray.length; i++) {
+            //     let placeMark = new ymaps.Placemark(routesArray[i].coords, {
+            //         balloonContent: routesArray[i].value
+            //     }, {
+            //         draggable: true,
+            //     });
+            //     placeMark.events.add('dragend', (e) => {
+            //         controller.onDragRedraw(e); // перетаскивание на карте
+            //     });
+            //
+            //     geoCollection.add(placeMark);
+            // }
+
+            routesArray.forEach((route) => {
+                let placeMark = new ymaps.Placemark(route.coords, {
+                    balloonContent: route.value
                 }, {
                     draggable: true,
                 });
@@ -43,7 +56,8 @@ ymaps.ready(() => {
                 });
 
                 geoCollection.add(placeMark);
-            }
+
+            });
 
             if (routesArray.length > 1) {
                 view.drawRoute(routesArray, geoCollection);

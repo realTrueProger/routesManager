@@ -4,11 +4,28 @@ ymaps.ready(() => {
 
     class Model {
         constructor() {
-            this.routes = [];
-            this.geoCollection = new ymaps.GeoObjectCollection();
+            this._routes = [];
+            this._geoCollection = new ymaps.GeoObjectCollection();
+        }
+
+        get routes() {
+            return this._routes;
+        }
+
+        get geoCollection() {
+            return this._geoCollection;
+        }
+
+        addRoute(route) {
+            this._routes.push(route);
+        }
+
+        removeRoute(value) {
+            this._routes = this._routes.filter((route) => {
+                return route.value !== value;
+            });
         }
     }
-
 
     class View {
         constructor() {
@@ -32,18 +49,6 @@ ymaps.ready(() => {
 
         renderMap(routesArray, geoCollection) {
             geoCollection.removeAll();
-            // for (let i = 0; i < routesArray.length; i++) {
-            //     let placeMark = new ymaps.Placemark(routesArray[i].coords, {
-            //         balloonContent: routesArray[i].value
-            //     }, {
-            //         draggable: true,
-            //     });
-            //     placeMark.events.add('dragend', (e) => {
-            //         controller.onDragRedraw(e); // перетаскивание на карте
-            //     });
-            //
-            //     geoCollection.add(placeMark);
-            // }
 
             routesArray.forEach((route) => {
                 let placeMark = new ymaps.Placemark(route.coords, {
@@ -52,11 +57,9 @@ ymaps.ready(() => {
                     draggable: true,
                 });
                 placeMark.events.add('dragend', (e) => {
-                    controller.onDragRedraw(e); // перетаскивание на карте
+                    controller.onDragRedraw(e.get('target').geometry._coordinates, e.get('target').properties._data.balloonContent); // перетаскивание на карте
                 });
-
                 geoCollection.add(placeMark);
-
             });
 
             if (routesArray.length > 1) {
@@ -70,16 +73,15 @@ ymaps.ready(() => {
 
         renderList(routesArray) {
             this.routeList.innerHTML = '';
-            for (let i = 0; i < routesArray.length; i++) {
+            routesArray.forEach((route) => {
                 let li = document.createElement('li');
                 let btn = document.createElement('button');
                 btn.classList.add('delete');
-                btn.addEventListener('click', controller.removeRoute);
-                li.innerHTML = routesArray[i].value;
+                btn.addEventListener('click', Controller.removeRoute);
+                li.innerHTML = route.value;
                 li.append(btn);
                 this.routeList.appendChild(li);
-            }
-
+            });
             controller.dragListOn(); // перетаскивание списка
         }
 
@@ -87,9 +89,9 @@ ymaps.ready(() => {
 
         drawRoute(routesArray, geoCollection) {
             let coords = [];
-            for (let i = 0; i < routesArray.length; i++) {
-                coords.push(routesArray[i].coords);
-            }
+            routesArray.forEach((route) => {
+                coords.push(route.coords);
+            });
             geoCollection.add(new ymaps.Polyline(coords));
         }
     }
@@ -114,7 +116,7 @@ ymaps.ready(() => {
                 let myGeoCoder = ymaps.geocode(value);
                 myGeoCoder.then(
                     function (res) {
-                        model.routes.push({
+                        model.addRoute({
                             value: value,
                             coords: res.geoObjects.get(0).geometry.getCoordinates()
                         });
@@ -129,13 +131,12 @@ ymaps.ready(() => {
             }
         }
 
-        removeRoute(e) {
-            model.routes = model.routes.filter((route) => {
-                return route.value !== e.target.parentElement.innerText;
-            });
+        // Удаление маршрута кнопкой
+
+        static removeRoute(e) {
+            model.removeRoute(e.target.parentElement.innerText);
             view.render(model.routes, model.geoCollection);
         }
-
 
         // Перетаскивание списка
 
@@ -152,9 +153,9 @@ ymaps.ready(() => {
 
         // Перетаскивание по карте
 
-        onDragRedraw(e) {
-            let newCoords = e.get('target').geometry._coordinates;
-            let value = e.get('target').properties._data.balloonContent;
+        onDragRedraw(eCoordinates, eValue) {
+            let newCoords = eCoordinates;
+            let value = eValue;
             let newValue;
             let myGeoCoder = ymaps.geocode(newCoords);
             myGeoCoder.then(
@@ -175,9 +176,10 @@ ymaps.ready(() => {
         }
     }
 
+
     let myMap = new ymaps.Map("map", {
         center: [55.76, 37.64],
-        zoom: 10,
+        zoom: 4,
         controls: []
     });
 

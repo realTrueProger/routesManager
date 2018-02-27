@@ -36,6 +36,11 @@ ymaps.ready(() => {
 
         init() {
             this.routeList = document.getElementById('routesList');
+            this.routeInput = document.getElementById('routeInput');
+
+            this.routeInput.addEventListener('keypress', (e) => {
+                controller.onPressAdd(e.keyCode, e.target.value);
+            });
         }
 
         // Общий метод рендера
@@ -77,7 +82,9 @@ ymaps.ready(() => {
                 let li = document.createElement('li');
                 let btn = document.createElement('button');
                 btn.classList.add('delete');
-                btn.addEventListener('click', Controller.removeRoute);
+                btn.addEventListener('click', (e) => {
+                    Controller.removeRoute(e.target.parentElement.innerText);
+                });
                 li.innerHTML = route.value;
                 li.append(btn);
                 this.routeList.appendChild(li);
@@ -98,21 +105,14 @@ ymaps.ready(() => {
 
     class Controller {
         constructor() {
-            this.init();
-        }
-
-        // инициализация
-
-        init() {
-            document.getElementById('routeInput').addEventListener('keypress', this.onPressAdd);
         }
 
         // Добавить маршрут из поля Input
 
-        onPressAdd(e) {
+        onPressAdd(eKeycode, eValue) {
 
-            if (e.keyCode === 13) {
-                let value = e.target.value;
+            if (eKeycode === 13) {
+                let value = eValue;
                 let myGeoCoder = ymaps.geocode(value);
                 myGeoCoder.then(
                     function (res) {
@@ -127,14 +127,14 @@ ymaps.ready(() => {
                         console.log('Ошибка');
                     }
                 );
-                e.target.value = '';
+                view.routeInput.value = '';
             }
         }
 
         // Удаление маршрута кнопкой
 
-        static removeRoute(e) {
-            model.removeRoute(e.target.parentElement.innerText);
+        static removeRoute(value) {
+            model.removeRoute(value);
             view.render(model.routes, model.geoCollection);
         }
 
